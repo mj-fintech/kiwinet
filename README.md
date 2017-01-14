@@ -19,12 +19,10 @@ I suggest to create a empty panda DataFrame first with a base-index that might b
 
 If you have a list of Symbols you want to extract the data for:
 
-<code>
-Data = pd.DataFrame(index=base_index)
 
-error = []
-
-for i in symbol_list:
+<code>Data = pd.DataFrame(index=base_index)</code>
+<code>error = []</code>
+<code>for i in symbol_list:
 	try:
 		Data[i] = intra_stock_df_longerdays(i,"60","14")['CLOSE']
 		print i + " record has been parsed"
@@ -35,5 +33,4 @@ for i in symbol_list:
 		
 	Data = Data.fillna(method='ffill')
 	Data = Data.fillna(method='bfill')
-	Data.to_csv("Data.csv")
-</code>
+	Data.to_csv("Data.csv")</code>
