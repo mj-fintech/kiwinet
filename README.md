@@ -17,20 +17,3 @@ This will give you a Pandas dataframe with UNIX Timestamp, Close, High, Low, Ope
 
 I suggest to create a empty panda DataFrame first with a base-index that might be the time-frame that covers the longest available time, because some records have missing data, and we want to take care of it.
 
-If you have a list of Symbols you want to extract the data for:
-
-Data = pd.DataFrame(index=base_index)
-error = []
-<code>
-for i in symbol_list:
-	try:
-		Data[i] = intra_stock_df_longerdays(i,"60","14")['CLOSE']
-		print i + " record has been parsed"
-	except Exception as e:
-		print i + " ------------------------- " +str(e)		
-		error.append(i)		
-		
-	Data = Data.fillna(method='ffill')
-	Data = Data.fillna(method='bfill')
-	Data.to_csv("Data.csv")
-</code>
