@@ -19,7 +19,9 @@ I suggest to create a empty panda DataFrame first with a base-index that might b
 
 If you have a list of Symbols you want to extract the data for:
 
-<code>Data = pd.DataFrame(index=base_index)
+<code>
+
+Data = pd.DataFrame(index=base_index)
 error = []
 for i in symbol_list:
 	
@@ -33,4 +35,6 @@ for i in symbol_list:
 		
 	Data = Data.fillna(method='ffill')
 	Data = Data.fillna(method='bfill')
-	Data.to_csv("Data.csv")</code>
+	Data.to_csv("Data.csv")
+
+</code>
