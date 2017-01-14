@@ -21,11 +21,11 @@ If you have a list of Symbols you want to extract the data for:
 
 Data = pd.DataFrame(index=base_index)
 error = []
+<code>
 for i in symbol_list:
 	try:
 		Data[i] = intra_stock_df_longerdays(i,"60","14")['CLOSE']
 		print i + " record has been parsed"
-	
 	except Exception as e:
 		print i + " ------------------------- " +str(e)		
 		error.append(i)		
@@ -33,3 +33,4 @@ for i in symbol_list:
 	Data = Data.fillna(method='ffill')
 	Data = Data.fillna(method='bfill')
 	Data.to_csv("Data.csv")
+</code>
