@@ -26,7 +26,7 @@ def intra_stock_df(symbol, interval):
 
 	return df
 
-## After Market Record ##
+## After Market Record ##                                       dfdf
 def intra_aft_df(symbol, interval):
 
 	f = urllib.urlopen("http://www.google.com/finance/getprices?q="+symbol+"&i="+interval+"&p=d&f=d,o,h,l,c,v&sessions=ext_hours").read().split("\n")[8:-1]
