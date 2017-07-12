@@ -11,6 +11,7 @@ import os
 from flask import redirect, url_for
 from werkzeug.utils import secure_filename
 from entity_parser import entity_parser
+from input_str_clean import input_str_clean
 
 UPLOAD_FOLDER = '/home/minjun/projects/pypestream'
 app = Flask(__name__)
@@ -47,7 +48,7 @@ def classify(classifier_name, user_input):
         try:
 
             classifier = load_classifier(classifier_name)
-            return classifier.predict([user_input])[0], classifier_name
+            return classifier.predict([user_input])[0]
         except Exception as e:
             print (str(e))
 
@@ -55,7 +56,7 @@ def classify(classifier_name, user_input):
         try:
 
             classifier = load_classifier(classifier_name)
-            return ann_class_name(classifier.predict_classes(ann_input(user_input))[0]), classifier_name
+            return ann_class_name(classifier.predict_classes(ann_input(user_input)))[0]
         except Exception as e:
             print (str(e))
 
@@ -64,34 +65,42 @@ def classify(classifier_name, user_input):
         try:
 
             classifier = load_classifier(classifier_name)
-            return classifier.predict(ann_input(user_input))[0], classifier_name
+            return classifier.predict(ann_input(user_input))[0]
         except Exception as e:
             print (str(e))
 
     else:
         pass
 
-@app.route("/", methods=["GET"])
-def get():
-    json = request.get_json()
-    response = [glob.glob('*.pickle')[i].split('.')[0] for i in range(len(glob.glob('*.pickle')))] + [glob.glob('*.h5')[s].split('.')[0] for s in range(len(glob.glob('*.h5')))]
-    return jsonify(available_classifiers=response)
-
-
-@app.route("/", methods=["POST"])
-def post():
+@app.route("/user_input=<contents>", methods=["GET"])
+def get(contents):
     clf_list = ['svc_clf','sgd_clf','gs_nb_clf','ann_clf','lr_clf','dt_clf']
-    json = request.get_json()
-    if json.get('classifier'):
-        response = classify(json['classifier'], json['input'])
-        response_2 = entity_parser(json['input'])
-        return jsonify(data=[response], entity=[response_2])
-    else:
-        response = []
-        for clf in clf_list:
-            response.append(classify('{}'.format(clf), json['input']))
-        return jsonify(all_matches=response,entity=entity_parser(json['input']))
+    outputs={}
+    for clf in clf_list:
+        outputss={}
+        for i in range(5):
+        #outputs.update({clf:{'class':classify(clf,contents),'accuracy':accuracy(clf)}})
+            outputss.update({i:classify(clf,input_str_clean(contents))})
+            outputs.update({clf:outputss})
+    #json = request.get_json()
+    #response = [glob.glob('*.pickle')[i].split('.')[0] for i in range(len(glob.glob('*.pickle')))] + [glob.glob('*.h5')[s].split('.')[0] for s in range(len(glob.glob('*.h5')))]
+    return jsonify(all_matches=outputs, entities=entity_parser(input_str_clean(contents)))
 
+###############################################################################
+#@app.route("/", methods=["POST"])
+#def post():
+#    clf_list = ['svc_clf','sgd_clf','gs_nb_clf','ann_clf','lr_clf','dt_clf']
+#    json = request.get_json()
+#    if json.get('classifier'):
+#        response = classify(json['classifier'], json['input'])
+#        response_2 = entity_parser(json['input'])
+#        return jsonify(data=[response], entity=[response_2])
+#    else:
+#        response = []
+#        for clf in clf_list:
+#            response.append(classify('{}'.format(clf), json['input']))
+#        return jsonify(best_matches=list(set(response)),entities=entity_parser(json['input']))
+###############################################################################
 
 # Upload csv file --> train classifier --> return Accuracy and actual/predicted DataFrame
 @app.route("/upload", methods=["POST"])
@@ -102,12 +111,13 @@ def openfile():
     filename = secure_filename(openfile.filename)
     openfile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-    dataframe, accuracy = TRAIN(os.path.join(app.config['UPLOAD_FOLDER'], filename),classifier)
+    dataframe, Accuracy = TRAIN(os.path.join(app.config['UPLOAD_FOLDER'], filename),classifier)
 
-    print(dataframe.to_dict())
+    #print(dataframe.to_dict())
     data_dict = {str(key): str(value)
                  for key, value in dataframe.to_dict().items()}
-    return jsonify(accuracy=str(accuracy), data=data_dict)
+    #print (Accuracy)
+    return jsonify(accuracy=str(Accuracy), data=data_dict)
     #df = pd.DataFrame(openfile)
     #return df
     #filename = secure_filename(file.filename)
