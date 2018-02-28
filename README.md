@@ -1,3 +1,2 @@
-# axonXaxon
-Forecasting financial market assets price with multiple regressors and classifiers: Machine Learning, Natural Language Processing, Statistics, Network Science, Information Theory and more. Edit
-Add topics
+# kiwinet
+The world-first social networks for financial market investors with market analytics.
